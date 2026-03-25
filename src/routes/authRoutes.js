@@ -12,6 +12,7 @@ router.get('/login',loginController);
 router.get('/me',meController); 
 router.get('/logout',logoutController); 
 router.get('/prueba',logoutController); 
+router.get('/prueba2',logoutController); 
 //rutas privadas
 
 module.exports = router;
