@@ -7,7 +7,7 @@ const{meController} = require('../controllers/auth/meController');
 const{logoutController} = require('../controllers/auth/logoutController');
 
 //rutas publicas
-router.get('/register',registerController); 
+router.post('/register',registerController); 
 router.get('/login',loginController); 
 router.get('/me',meController); 
 router.get('/logout',logoutController); 
