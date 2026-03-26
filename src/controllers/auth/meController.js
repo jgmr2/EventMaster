@@ -1,11 +1,9 @@
 const meController = async (req, res) => {
     try {
-        return req.usuario 
-            ? res.json({ _id: req.usuario._id, name: req.usuario.name, email: req.usuario.email }) 
-            : res.status(404).json({ msg: 'Usuario no encontrado' });
+        const { _id, name, email, role } = req.usuario;
+        return res.json({ _id, name, email, role });
     } catch (e) {
-        console.error(`[Me Error]: ${e.message}`);
-        res.status(500).json({ msg: 'Error en el servidor al obtener datos del usuario' });
+        res.status(500).json({ msg: 'Error al obtener datos' });
     }
 };
 
