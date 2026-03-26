@@ -15,47 +15,35 @@ El sistema implementa un Control de Acceso Basado en Roles (RBAC):
 * **user:** Consulta de cartelera y gestion de reservas personales.
 
 ---
+# 📋 Checklist de Implementacion - EventMaster
 
-## Endpoints de Autenticacion (Auth)
+## 1. Modulo de Autenticacion (Auth)
+- [x] **POST /auth/register**: Registro con asignacion de rol protegida (Whitelist).
+- [x] **POST /auth/login**: Validacion de credenciales y retorno de JWT + Rol.
+- [x] **GET /auth/me**: Recuperacion de sesion para el usuario autenticado.
+- [ ] **Middleware checkRole**: Implementar la restriccion de acceso segun el rol del JWT.
 
-| Metodo | Endpoint | Descripcion | Acceso |
-| :--- | :--- | :--- | :--- |
-| `POST` | `/auth/register` | Registro de usuarios con asignacion de rol protegida. | Publico |
-| `POST` | `/auth/login` | Validacion de credenciales y retorno de JWT. | Publico |
-| `GET` | `/auth/me` | Recuperacion de datos del perfil del usuario autenticado. | Privado |
+## 2. Modulo de Eventos (Events)
+- [x] **GET /events**: Listado general con ordenamiento por fecha.
+- [x] **GET /events/:id**: Detalle tecnico, zonas y precios por ID.
+- [x] **POST /events/new**: Creacion de evento y configuracion de aforo (Admin/Organizer).
+- [ ] **PATCH /events/:id**: Actualizacion parcial de parametros del evento (Admin/Organizer).
+- [ ] **DELETE /events/:id**: Cancelacion logica mediante cambio de estado (Admin/Organizer).
 
----
+## 3. Modulo de Sedes (Places)
+- [ ] **GET /places**: Listado de infraestructura registrada (Direccion/Capacidad).
+- [ ] **POST /places**: Alta de nuevas sedes fisicas (Solo Admin).
+- [ ] **GET /places/:id/availability**: Verificacion de disponibilidad y colisiones de horario.
 
-## Endpoints de Eventos (Events)
+## 4. Modulo de Reservas (Reservations)
+- [ ] **POST /reservations**: Transaccion de compra y actualizacion automatica de cupo (User).
+- [ ] **GET /reservations/my-tickets**: Historial de comprobantes del usuario activo (User).
+- [ ] **GET /reservations/event/:eventId**: Reporte de ventas y disponibilidad por zona (Admin/Organizer/Artist).
 
-| Metodo | Endpoint | Descripcion | Requisito de Rol |
-| :--- | :--- | :--- | :--- |
-| `GET` | `/events` | Listado de eventos con ordenamiento por fecha. | Publico |
-| `GET` | `/events/:id` | Obtencion de detalles, zonas y precios por ID. | Publico |
-| `POST` | `/events/new` | Creacion de evento y configuracion de aforo inicial. | `admin`, `organizer` |
-| `PATCH` | `/events/:id` | Modificacion parcial de parametros del evento. | `admin`, `organizer` |
-| `DELETE` | `/events/:id` | Cancelacion logica del evento (cambio de estado). | `admin`, `organizer` |
-
----
-
-## Endpoints de Sedes (Places)
-
-| Metodo | Endpoint | Descripcion | Requisito de Rol |
-| :--- | :--- | :--- | :--- |
-| `GET` | `/places` | Listado de sedes registradas (address/capacity). | Privado |
-| `POST` | `/places` | Alta de nueva infraestructura fisica. | `admin` |
-| `GET` | `/places/:id/availability` | Verificacion de colisiones de horario en la sede. | `admin`, `organizer` |
-
----
-
-## Endpoints de Reservas (Reservations)
-
-| Metodo | Endpoint | Descripcion | Requisito de Rol |
-| :--- | :--- | :--- | :--- |
-| `POST` | `/reservations` | Transaccion de reserva y actualizacion de ocupacion. | `user` |
-| `GET` | `/reservations/my-tickets` | Listado de comprobantes del usuario activo. | `user` |
-| `GET` | `/reservations/event/:eventId` | Reporte tecnico de ventas y disponibilidad por zona. | `admin`, `organizer`, `artist` |
-
+## 5. Infraestructura y Calidad
+- [x] **Estructura de Modelos**: User y Event definidos con validaciones.
+- [x] **Seguridad Base**: Hashing de passwords y proteccion de JWT.
+- [ ] **Estandarizacion de Respuestas**: Asegurar codigos 200, 201, 400, 401, 403, 404 y 500.
 ---
 
 ## Codigos de Respuesta
