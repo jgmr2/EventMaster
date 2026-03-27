@@ -11,11 +11,13 @@
 El sistema implementa un Control de Acceso Basado en Roles (RBAC):
 * **admin:** Acceso total al sistema y gestion de infraestructura.
 * **organizer:** Creacion y gestion de eventos, zonas y reportes de ventas.
-* **artist:** Visualizacion de metricas de ventas y estado de aforo en tiempo real.
+* **artist:** Visualizacion de metricas de ventas y estado de aforo.
+* **staff:** Rol operativo para validacion de acceso (Check-in) y control de puertas.
 * **user:** Consulta de cartelera y gestion de reservas personales.
 
 ---
-# 📋 Checklist de Implementacion - EventMaster
+
+# Checklist de Implementacion - EventMaster
 
 ## 1. Modulo de Autenticacion (Auth)
 - [x] **POST /auth/register**: Registro con asignacion de rol protegida (Whitelist).
@@ -24,26 +26,31 @@ El sistema implementa un Control de Acceso Basado en Roles (RBAC):
 - [ ] **Middleware checkRole**: Implementar la restriccion de acceso segun el rol del JWT.
 
 ## 2. Modulo de Eventos (Events)
-- [x] **GET /events**: Listado general con ordenamiento por fecha.
+- [x] **GET /events**: Listado general con filtrado opcional y ordenamiento.
 - [x] **GET /events/:id**: Detalle tecnico, zonas y precios por ID.
 - [x] **POST /events/new**: Creacion de evento y configuracion de aforo (Admin/Organizer).
 - [ ] **PATCH /events/:id**: Actualizacion parcial de parametros del evento (Admin/Organizer).
 - [ ] **DELETE /events/:id**: Cancelacion logica mediante cambio de estado (Admin/Organizer).
+- [ ] **GET /events/:id/availability**: Consulta rapida de disponibilidad por zonas.
 
 ## 3. Modulo de Sedes (Places)
 - [ ] **GET /places**: Listado de infraestructura registrada (Direccion/Capacidad).
 - [ ] **POST /places**: Alta de nuevas sedes fisicas (Solo Admin).
-- [ ] **GET /places/:id/availability**: Verificacion de disponibilidad y colisiones de horario.
+- [ ] **GET /places/:id/availability**: Verificacion de disponibilidad de fechas en la sede.
 
 ## 4. Modulo de Reservas (Reservations)
-- [ ] **POST /reservations**: Transaccion de compra y actualizacion automatica de cupo (User).
+- [ ] **POST /reservations**: Creacion de ticket y descuento automatico de aforo por zona (User).
 - [ ] **GET /reservations/my-tickets**: Historial de comprobantes del usuario activo (User).
-- [ ] **GET /reservations/event/:eventId**: Reporte de ventas y disponibilidad por zona (Admin/Organizer/Artist).
+- [ ] **DELETE /reservations/:id**: Cancelacion de reserva y liberacion de cupo (User/Admin).
+- [ ] **PATCH /reservations/:id/check-in**: Validacion de entrada al evento (Staff/Admin).
+- [ ] **GET /reservations/event/:eventId**: Reporte de ventas y ocupacion por zona (Admin/Organizer/Artist).
 
 ## 5. Infraestructura y Calidad
 - [x] **Estructura de Modelos**: User y Event definidos con validaciones.
+- [ ] **Modelo Place/Reservation**: Crear esquemas para sedes y transacciones de tickets.
 - [x] **Seguridad Base**: Hashing de passwords y proteccion de JWT.
 - [ ] **Estandarizacion de Respuestas**: Asegurar codigos 200, 201, 400, 401, 403, 404 y 500.
+
 ---
 
 ## Codigos de Respuesta
