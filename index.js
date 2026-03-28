@@ -9,17 +9,22 @@ const app = express();
 connectDB(); 
 app.use(express.json());
 
-// --- NUEVA CONFIGURACIÓN PARA SWAGGER EN VERCEL ---
+// --- CONFIGURACIÓN CORREGIDA PARA SWAGGER EN VERCEL ---
 const CSS_URL = "https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/4.15.5/swagger-ui.min.css";
+const JS_URL = [
+  "https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/4.15.5/swagger-ui-bundle.js",
+  "https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/4.15.5/swagger-ui-standalone-preset.js"
+];
 
 app.use('/api-docs', 
     swaggerUi.serve, 
     swaggerUi.setup(swaggerSpec, { 
         customCssUrl: CSS_URL,
+        customJs: JS_URL,
         customSiteTitle: "EventMaster API Docs"
     })
 );
-// -------------------------------------------------
+// ------------------------------------------------------
 
 app.use('/api/auth', require('./src/routes/authRoutes'));
 app.use('/api/event', require('./src/routes/eventRoutes'));
