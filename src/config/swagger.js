@@ -29,8 +29,8 @@ const options = {
       }
     }
   },
-  apis: [
-    path.join(__dirname, '../docs/*.yaml'),
+apis: [
+    path.join(process.cwd(), 'src/docs/*.yaml'),
   ],
 };
 
