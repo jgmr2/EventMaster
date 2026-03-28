@@ -9,7 +9,13 @@ const app = express();
 connectDB(); 
 app.use(express.json());
 
-// --- CONFIGURACIÓN CORREGIDA PARA SWAGGER EN VERCEL ---
+// --- EL TRUCO MAESTRO PARA EVITAR ERRORES 404 EN VERCEL ---
+// Interceptamos las peticiones locales y las redirigimos a los CDNs oficiales
+app.get('/api-docs/swagger-ui-bundle.js', (req, res) => res.redirect('https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/4.15.5/swagger-ui-bundle.min.js'));
+app.get('/api-docs/swagger-ui-standalone-preset.js', (req, res) => res.redirect('https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/4.15.5/swagger-ui-standalone-preset.min.js'));
+app.get('/api-docs/swagger-ui.css', (req, res) => res.redirect('https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/4.15.5/swagger-ui.min.css'));
+
+// --- CONFIGURACIÓN PARA SWAGGER ---
 const CSS_URL = "https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/4.15.5/swagger-ui.min.css";
 const JS_URL = [
   "https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/4.15.5/swagger-ui-bundle.js",
