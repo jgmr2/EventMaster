@@ -30,7 +30,6 @@ const options = {
     }
   },
   apis: [
-    // El '../' es LA CLAVE. Sube de 'config' a 'src', y entra a 'docs'
     path.join(__dirname, '../docs/*.yaml'),
   ],
 };
