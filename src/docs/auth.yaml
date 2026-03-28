@@ -1,0 +1,51 @@
+tags:
+  - name: Auth
+    description: Autenticación de usuarios
+
+paths:
+  /api/auth/register:
+    post:
+      summary: Registrar usuario
+      tags: [Auth]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, password]
+              properties:
+                email:
+                  type: string
+                  example: test@email.com
+                password:
+                  type: string
+                  example: 123456
+      responses:
+        201:
+          description: Usuario creado
+
+  /api/auth/login:
+    post:
+      summary: Login
+      tags: [Auth]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, password]
+      responses:
+        200:
+          description: Retorna JWT
+
+  /api/auth/me:
+    get:
+      summary: Usuario autenticado
+      tags: [Auth]
+      security:
+        - bearerAuth: []
+      responses:
+        200:
+          description: Usuario actual
