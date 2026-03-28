@@ -1,5 +1,5 @@
 const swaggerJsdoc = require('swagger-jsdoc');
-const path = require('path'); // Importante importar path
+const path = require('path');
 
 const options = {
   definition: {
@@ -10,8 +10,8 @@ const options = {
     },
     servers: [
       {
-        // Agrega tu URL de Vercel aquí
-        url: 'https://tu-proyecto.vercel.app/api', 
+        // Tu URL real de Vercel
+        url: 'https://event-master-eight.vercel.app/api', 
         description: 'Servidor Producción'
       },
       {
@@ -30,8 +30,8 @@ const options = {
     }
   },
   apis: [
-    // Usamos path.join para que Vercel encuentre los archivos YAML
-    path.join(__dirname, './docs/*.yaml'),
+    // El '../' es LA CLAVE. Sube de 'config' a 'src', y entra a 'docs'
+    path.join(__dirname, '../docs/*.yaml'),
   ],
 };
 
