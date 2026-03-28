@@ -1,10 +1,7 @@
 {
   "functions": {
     "index.js": {
-      "includeFiles": [
-        "node_modules/swagger-ui-dist/**",
-        "src/docs/**/*.yaml"
-      ]
+      "includeFiles": "{node_modules/swagger-ui-dist/**,src/docs/**/*.yaml}"
     }
   },
   "rewrites": [
