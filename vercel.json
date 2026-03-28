@@ -8,7 +8,7 @@
   ],
   "functions": {
     "index.js": {
-      "includeFiles": "src/docs/**/*.yaml"
+      "includeFiles": "node_modules/swagger-ui-dist/**"
     }
   },
   "routes": [
