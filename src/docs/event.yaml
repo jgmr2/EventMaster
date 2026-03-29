@@ -24,27 +24,30 @@ paths:
                     title:
                       type: string
                       example: "Concierto de Rock"
-                    date:
+                    startTime:
                       type: string
                       format: date-time
-                      example: "2026-05-20T20:00:00.000Z"
+                      example: "2026-11-15T09:00:00.000Z"
                     endTime:
                       type: string
                       format: date-time
-                      example: "2026-05-20T23:30:00.000Z"
+                      example: "2026-11-15T18:00:00.000Z"
                     location:
                       type: string
                       example: "Auditorio Nacional"
                     capacity:
                       type: number
                       example: 10000
+                    createdBy:
+                      type: string
+                      example: "69c86fd26831072ddb2c30b1"
         500:
           description: Error interno del servidor.
 
   /event/new:
     post:
       summary: Crear un nuevo evento
-      description: Crea un nuevo evento en la base de datos. Solo accesible para usuarios autenticados.
+      description: Crea un nuevo evento en la base de datos. Valida que el lugar elegido no esté ocupado en el mismo rango de horario. Solo accesible para usuarios autenticados.
       tags: [Eventos]
       security:
         - bearerAuth: []
@@ -55,21 +58,21 @@ paths:
           application/json:
             schema:
               type: object
-              required: [title, date, endTime, location, capacity]
+              required: [title, startTime, endTime, location, capacity]
               properties:
                 title:
                   type: string
                   description: Título del evento.
                   example: "Conferencia de Tecnología 2026"
-                date:
+                startTime:
                   type: string
                   format: date-time
-                  description: Fecha y hora de inicio del evento.
+                  description: Fecha y hora exacta de inicio del evento.
                   example: "2026-11-15T09:00:00.000Z"
                 endTime:
                   type: string
                   format: date-time
-                  description: Fecha y hora de finalización del evento.
+                  description: Fecha y hora exacta de finalización del evento.
                   example: "2026-11-15T18:00:00.000Z"
                 location:
                   type: string
@@ -82,8 +85,45 @@ paths:
       responses:
         201:
           description: Evento creado exitosamente.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  _id:
+                    type: string
+                    example: "64a7b9c2f1e3a40012345678"
+                  title:
+                    type: string
+                    example: "Conferencia de Tecnología 2026"
+                  startTime:
+                    type: string
+                    format: date-time
+                    example: "2026-11-15T09:00:00.000Z"
+                  endTime:
+                    type: string
+                    format: date-time
+                    example: "2026-11-15T18:00:00.000Z"
+                  location:
+                    type: string
+                    example: "Centro de Convenciones"
+                  capacity:
+                    type: number
+                    example: 500
+                  createdBy:
+                    type: string
+                    description: ID del usuario que creó el evento.
+                    example: "69c86fd26831072ddb2c30b1"
         400:
-          description: Error de validación (faltan datos requeridos o formato de fecha inválido).
+          description: Error de validación (faltan datos, formato inválido, o cruce de horarios).
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    example: "El lugar 'Centro de Convenciones' ya está ocupado en ese horario."
         401:
           description: No autorizado. Falla el token de autenticación.
         500:
@@ -116,14 +156,14 @@ paths:
                   title:
                     type: string
                     example: "Concierto de Rock"
-                  date:
+                  startTime:
                     type: string
                     format: date-time
-                    example: "2026-05-20T20:00:00.000Z"
+                    example: "2026-11-15T09:00:00.000Z"
                   endTime:
                     type: string
                     format: date-time
-                    example: "2026-05-20T23:30:00.000Z"
+                    example: "2026-11-15T18:00:00.000Z"
                   location:
                     type: string
                     example: "Auditorio Nacional"
@@ -165,6 +205,10 @@ paths:
                 capacity:
                   type: number
                   example: 600
+                startTime:
+                  type: string
+                  format: date-time
+                  example: "2026-11-15T10:00:00.000Z"
                 endTime:
                   type: string
                   format: date-time
