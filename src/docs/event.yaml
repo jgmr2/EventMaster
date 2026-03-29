@@ -28,6 +28,10 @@ paths:
                       type: string
                       format: date-time
                       example: "2026-05-20T20:00:00.000Z"
+                    endTime:
+                      type: string
+                      format: date-time
+                      example: "2026-05-20T23:30:00.000Z"
                     location:
                       type: string
                       example: "Auditorio Nacional"
@@ -51,7 +55,7 @@ paths:
           application/json:
             schema:
               type: object
-              required: [title, date, location, capacity]
+              required: [title, date, endTime, location, capacity]
               properties:
                 title:
                   type: string
@@ -60,8 +64,13 @@ paths:
                 date:
                   type: string
                   format: date-time
-                  description: Fecha y hora del evento.
+                  description: Fecha y hora de inicio del evento.
                   example: "2026-11-15T09:00:00.000Z"
+                endTime:
+                  type: string
+                  format: date-time
+                  description: Fecha y hora de finalización del evento.
+                  example: "2026-11-15T18:00:00.000Z"
                 location:
                   type: string
                   description: Lugar donde se realizará el evento.
@@ -74,7 +83,7 @@ paths:
         201:
           description: Evento creado exitosamente.
         400:
-          description: Error de validación (faltan datos requeridos).
+          description: Error de validación (faltan datos requeridos o formato de fecha inválido).
         401:
           description: No autorizado. Falla el token de autenticación.
         500:
@@ -111,6 +120,10 @@ paths:
                     type: string
                     format: date-time
                     example: "2026-05-20T20:00:00.000Z"
+                  endTime:
+                    type: string
+                    format: date-time
+                    example: "2026-05-20T23:30:00.000Z"
                   location:
                     type: string
                     example: "Auditorio Nacional"
@@ -152,6 +165,10 @@ paths:
                 capacity:
                   type: number
                   example: 600
+                endTime:
+                  type: string
+                  format: date-time
+                  example: "2026-11-15T20:00:00.000Z"
       responses:
         200:
           description: Evento actualizado exitosamente.
