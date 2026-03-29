@@ -3,7 +3,7 @@ tags:
     description: Endpoints para la gestión, consulta y actualización de eventos.
 
 paths:
-  /event/:
+  /event:
     get:
       summary: Obtener todos los eventos
       description: Retorna una lista completa de todos los eventos registrados en el sistema. Es una ruta pública.
@@ -34,50 +34,6 @@ paths:
                     capacity:
                       type: number
                       example: 10000
-        500:
-          description: Error interno del servidor.
-
-  /event/{id}:
-    get:
-      summary: Obtener un evento por ID
-      description: Busca y retorna la información detallada de un evento específico utilizando su ID. Es una ruta pública.
-      tags: [Eventos]
-      parameters:
-        - in: path
-          name: id
-          required: true
-          schema:
-            type: string
-          description: ID único del evento proporcionado por MongoDB.
-          example: "64a7b9c2f1e3a40012345678"
-      responses:
-        200:
-          description: Evento encontrado y retornado exitosamente.
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  _id:
-                    type: string
-                    example: "64a7b9c2f1e3a40012345678"
-                  title:
-                    type: string
-                    example: "Concierto de Rock"
-                  date:
-                    type: string
-                    format: date-time
-                    example: "2026-05-20T20:00:00.000Z"
-                  location:
-                    type: string
-                    example: "Auditorio Nacional"
-                  capacity:
-                    type: number
-                    example: 10000
-        400:
-          description: Formato de ID inválido.
-        404:
-          description: Evento no encontrado.
         500:
           description: Error interno del servidor.
 
@@ -125,6 +81,49 @@ paths:
           description: Error interno del servidor.
 
   /event/{id}:
+    get:
+      summary: Obtener un evento por ID
+      description: Busca y retorna la información detallada de un evento específico utilizando su ID. Es una ruta pública.
+      tags: [Eventos]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          description: ID único del evento proporcionado por MongoDB.
+          example: "64a7b9c2f1e3a40012345678"
+      responses:
+        200:
+          description: Evento encontrado y retornado exitosamente.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  _id:
+                    type: string
+                    example: "64a7b9c2f1e3a40012345678"
+                  title:
+                    type: string
+                    example: "Concierto de Rock"
+                  date:
+                    type: string
+                    format: date-time
+                    example: "2026-05-20T20:00:00.000Z"
+                  location:
+                    type: string
+                    example: "Auditorio Nacional"
+                  capacity:
+                    type: number
+                    example: 10000
+        400:
+          description: Formato de ID inválido.
+        404:
+          description: Evento no encontrado.
+        500:
+          description: Error interno del servidor.
+          
     patch:
       summary: Actualizar un evento existente
       description: Modifica parcialmente los datos de un evento. Solo accesible para usuarios autenticados.
