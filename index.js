@@ -9,11 +9,10 @@ const app = express();
 connectDB(); 
 app.use(express.json());
 
-// ¡Adiós trucos raros! Código limpio:
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
-
 app.use('/api/auth', require('./src/routes/authRoutes'));
 app.use('/api/event', require('./src/routes/eventRoutes'));
+app.use('/api/place', require('./src/routes/placeRoutes'));
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Servidor en puerto:  ${PORT}`));

@@ -1,0 +1,94 @@
+tags:
+  - name: Sedes
+    description: Endpoints para la gestión de infraestructura física (Panel Admin).
+
+paths:
+  /places:
+    post:
+      summary: Crear una nueva sede física
+      description: Registra una nueva sede con sus zonas predefinidas y coordenadas geográficas. Solo accesible para administradores autenticados.
+      tags: [Sedes]
+      security:
+        - bearerAuth: []
+      requestBody:
+        description: Datos necesarios para dar de alta la sede.
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name, location, maxCapacity]
+              properties:
+                name:
+                  type: string
+                  description: Nombre único de la sede.
+                  example: "Arena Ciudad de México"
+                address:
+                  type: object
+                  properties:
+                    street: { type: string, example: "Av. de las Granjas 800" }
+                    city: { type: string, example: "CDMX" }
+                    state: { type: string, example: "Azcapotzalco" }
+                    country: { type: string, example: "México" }
+                    zipCode: { type: string, example: "02250" }
+                location:
+                  type: object
+                  required: [type, coordinates]
+                  properties:
+                    type:
+                      type: string
+                      example: "Point"
+                    coordinates: 
+                      type: array
+                      items: { type: number }
+                      example: [-99.1764, 19.4975]
+                maxCapacity:
+                  type: number
+                  description: Capacidad total de personas en el recinto.
+                  example: 22000
+                defaultZones:
+                  type: array
+                  items:
+                    type: object
+                    required: [name, capacity]
+                    properties:
+                      name: { type: string, example: "VIP" }
+                      capacity: { type: number, example: 5000 }
+                      description: { type: string, example: "Zona preferente" }
+                contactPhone:
+                  type: string
+                  example: "+525512345678"
+                amenities:
+                  type: array
+                  items: { type: string }
+                  example: ["Parking", "WiFi", "Accesibilidad"]
+      responses:
+        201:
+          description: Sede creada exitosamente.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    example: "Sede creada exitosamente"
+                  place:
+                    type: object
+                    properties:
+                      _id: { type: string, example: "64f1a2b3c4d5e6f7a8b9c0d1" }
+                      name: { type: string, example: "Arena Ciudad de México" }
+        400:
+          description: Error de validación (nombre duplicado o capacidad de zonas excedida).
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    example: "La capacidad total de las zonas excede la capacidad máxima de la sede"
+        401:
+          description: No autorizado. Falla el token de autenticación.
+        500:
+          description: Error interno del servidor.

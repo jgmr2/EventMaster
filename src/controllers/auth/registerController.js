@@ -1,23 +1,13 @@
 const user = require('../../models/users');
-
-const registerController = async (req, res) => {
+const registerController = async (req,res) => {
+    const { email } = req.body;
+    if (await user.findOne({ email })) 
+        return res.status(400).json({ msg: 'Este usuario ya está registrado' });
     try {
-        const { email, password, name, role } = req.body;
-        
-        if (await user.findOne({ email })) 
-            return res.status(400).json({ msg: 'Usuario ya registrado' });
-
-        // Protegemos el rol: solo permitimos los roles básicos en el registro público
-        // Si no viene rol o intentan ponerse 'admin', forzamos 'user'
-        const finalRole = ['organizer', 'artist', 'user'].includes(role) ? role : 'user';
-
-        const newUser = new user({ name, email, password, role: finalRole });
-        const { _id, name: uName, email: uEmail, role: uRole } = await newUser.save();
-
-        res.status(201).json({ _id, name: uName, email: uEmail, role: uRole });
+        const { _id, name, email: uEmail } = await new user(req.body).save();
+        res.json({ _id, name, email: uEmail });
     } catch (e) {
-        res.status(500).json({ msg: 'Error al registrar' });
+        res.status(500).json({ msg: 'Error en el servidor al registrar' });
     }
 };
-
-module.exports = { registerController };
+module.exports = {registerController};
