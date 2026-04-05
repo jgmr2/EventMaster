@@ -1,28 +1,28 @@
 const { Router } = require('express');
 const router = Router();
 
-// Importación de controladores (Asegúrate de crearlos en la carpeta controllers)
 const { showAllEventsController } = require('../controllers/event/showAllEventsController');
 const { createEventController } = require('../controllers/event/createEventController');
 const { showIdEventController } = require('../controllers/event/showIdEventController');
-const { updateEventController } = require('../controllers/event/updateEventController'); // Falta crear
-//const { deleteEventController } = require('../controllers/event/deleteEventController'); // Falta crear
-//const { getAvailabilityEventController } = require('../controllers/event/getAvailabilityEventController'); // Falta crear
+const { updateEventController } = require('../controllers/event/updateEventController');
+const { deleteEventController } = require('../controllers/event/deleteEventController');
+const { getAvailabilityEventController } = require('../controllers/event/getAvailabilityEventController');
 
 const checkAuth = require('../middlewares/global');
+const checkRole = require('../middlewares/checkRole');
 
 // =======================
 // Rutas Públicas
 // =======================
 router.get('/', showAllEventsController);
 router.get('/:id', showIdEventController);
-//router.get('/:id/availability', getAvailabilityEventController); // Nueva pública
+router.get('/:id/availability', getAvailabilityEventController);
 
 // =======================
 // Rutas Privadas (Admin/Organizer)
 // =======================
-router.post('/new', checkAuth, createEventController);
-router.patch('/:id', checkAuth, updateEventController);   // Nueva privada
-//router.delete('/:id', checkAuth, deleteEventController);  // Nueva privada
+router.post('/new', checkAuth, checkRole('admin', 'organizer'), createEventController);
+router.patch('/:id', checkAuth, checkRole('admin', 'organizer'), updateEventController);
+router.delete('/:id', checkAuth, checkRole('admin', 'organizer'), deleteEventController);
 
 module.exports = router;

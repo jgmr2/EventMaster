@@ -6,7 +6,7 @@ paths:
   /event:
     get:
       summary: Obtener todos los eventos
-      description: Retorna una lista completa de todos los eventos registrados en el sistema. Es una ruta pública.
+      description: Retorna una lista completa de todos los eventos registrados en el sistema. Ruta pública.
       tags: [Eventos]
       responses:
         200:
@@ -16,38 +16,14 @@ paths:
               schema:
                 type: array
                 items:
-                  type: object
-                  properties:
-                    _id:
-                      type: string
-                      example: "64a7b9c2f1e3a40012345678"
-                    title:
-                      type: string
-                      example: "Concierto de Rock"
-                    startTime:
-                      type: string
-                      format: date-time
-                      example: "2026-11-15T09:00:00.000Z"
-                    endTime:
-                      type: string
-                      format: date-time
-                      example: "2026-11-15T18:00:00.000Z"
-                    location:
-                      type: string
-                      example: "Auditorio Nacional"
-                    capacity:
-                      type: number
-                      example: 10000
-                    createdBy:
-                      type: string
-                      example: "69c86fd26831072ddb2c30b1"
+                  $ref: '#/components/schemas/EventResponse'
         500:
           description: Error interno del servidor.
 
   /event/new:
     post:
       summary: Crear un nuevo evento
-      description: Crea un nuevo evento en la base de datos. Valida que el lugar elegido no esté ocupado en el mismo rango de horario. Solo accesible para usuarios autenticados.
+      description: Crea un nuevo evento. Valida que el lugar no esté ocupado en el mismo rango horario. Acceso restringido a **Admin** y **Organizer**.
       tags: [Eventos]
       security:
         - bearerAuth: []
@@ -58,141 +34,104 @@ paths:
           application/json:
             schema:
               type: object
-              required: [title, startTime, endTime, location, capacity]
+              required: [title, location, startTime, endTime, totalCapacity, zones]
               properties:
                 title:
                   type: string
-                  description: Título del evento.
                   example: "Conferencia de Tecnología 2026"
+                description:
+                  type: string
+                  example: "El evento tecnológico más grande del año."
+                location:
+                  type: string
+                  example: "Centro de Convenciones"
                 startTime:
                   type: string
                   format: date-time
-                  description: Fecha y hora exacta de inicio del evento.
                   example: "2026-11-15T09:00:00.000Z"
                 endTime:
                   type: string
                   format: date-time
-                  description: Fecha y hora exacta de finalización del evento.
                   example: "2026-11-15T18:00:00.000Z"
-                location:
-                  type: string
-                  description: Lugar donde se realizará el evento.
-                  example: "Centro de Convenciones"
-                capacity:
+                totalCapacity:
                   type: number
-                  description: Aforo máximo permitido.
-                  example: 500
+                  example: 1000
+                status:
+                  type: string
+                  enum: [draft, published, suspended, cancelled, completed]
+                  default: published
+                  example: "published"
+                zones:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/ZoneInput'
       responses:
         201:
           description: Evento creado exitosamente.
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  _id:
-                    type: string
-                    example: "64a7b9c2f1e3a40012345678"
-                  title:
-                    type: string
-                    example: "Conferencia de Tecnología 2026"
-                  startTime:
-                    type: string
-                    format: date-time
-                    example: "2026-11-15T09:00:00.000Z"
-                  endTime:
-                    type: string
-                    format: date-time
-                    example: "2026-11-15T18:00:00.000Z"
-                  location:
-                    type: string
-                    example: "Centro de Convenciones"
-                  capacity:
-                    type: number
-                    example: 500
-                  createdBy:
-                    type: string
-                    description: ID del usuario que creó el evento.
-                    example: "69c86fd26831072ddb2c30b1"
+                $ref: '#/components/schemas/EventResponse'
         400:
-          description: Error de validación (faltan datos, formato inválido, o cruce de horarios).
+          description: Error de validación o cruce de horarios en la sede.
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  msg:
-                    type: string
-                    example: "El lugar 'Centro de Convenciones' ya está ocupado en ese horario."
+                $ref: '#/components/schemas/Error'
+              example:
+                msg: "El lugar 'Centro de Convenciones' ya está ocupado en ese horario."
         401:
-          description: No autorizado. Falla el token de autenticación.
+          description: Token ausente, expirado o inválido.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        403:
+          description: Requiere rol admin u organizer.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                msg: "No tienes permisos para esta acción"
         500:
           description: Error interno del servidor.
 
   /event/{id}:
     get:
       summary: Obtener un evento por ID
-      description: Busca y retorna la información detallada de un evento específico utilizando su ID. Es una ruta pública.
+      description: Retorna la información detallada de un evento, incluyendo sus zonas y precios. Ruta pública.
       tags: [Eventos]
       parameters:
-        - in: path
-          name: id
-          required: true
-          schema:
-            type: string
-          description: ID único del evento proporcionado por MongoDB.
-          example: "64a7b9c2f1e3a40012345678"
+        - $ref: '#/components/parameters/EventId'
       responses:
         200:
           description: Evento encontrado y retornado exitosamente.
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  _id:
-                    type: string
-                    example: "64a7b9c2f1e3a40012345678"
-                  title:
-                    type: string
-                    example: "Concierto de Rock"
-                  startTime:
-                    type: string
-                    format: date-time
-                    example: "2026-11-15T09:00:00.000Z"
-                  endTime:
-                    type: string
-                    format: date-time
-                    example: "2026-11-15T18:00:00.000Z"
-                  location:
-                    type: string
-                    example: "Auditorio Nacional"
-                  capacity:
-                    type: number
-                    example: 10000
-        400:
-          description: Formato de ID inválido.
+                $ref: '#/components/schemas/EventResponse'
         404:
           description: Evento no encontrado.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                msg: "Evento no encontrado"
         500:
           description: Error interno del servidor.
-          
+
     patch:
-      summary: Actualizar un evento existente
-      description: Modifica parcialmente los datos de un evento. Solo accesible para usuarios autenticados.
+      summary: Actualizar parcialmente un evento
+      description: Modifica uno o más campos de un evento existente. Acceso restringido a **Admin** y **Organizer**.
       tags: [Eventos]
       security:
         - bearerAuth: []
       parameters:
-        - in: path
-          name: id
-          required: true
-          schema:
-            type: string
-          description: ID del evento a actualizar.
-          example: "64a7b9c2f1e3a40012345678"
+        - $ref: '#/components/parameters/EventId'
       requestBody:
-        description: Campos del evento que se desean modificar.
+        description: Campos del evento que se desean modificar (todos opcionales).
         required: true
         content:
           application/json:
@@ -202,9 +141,12 @@ paths:
                 title:
                   type: string
                   example: "Conferencia de Tecnología 2026 (Actualizada)"
-                capacity:
-                  type: number
-                  example: 600
+                description:
+                  type: string
+                  example: "Descripción actualizada del evento."
+                location:
+                  type: string
+                  example: "Auditorio Nacional"
                 startTime:
                   type: string
                   format: date-time
@@ -213,14 +155,256 @@ paths:
                   type: string
                   format: date-time
                   example: "2026-11-15T20:00:00.000Z"
+                totalCapacity:
+                  type: number
+                  example: 1200
+                status:
+                  type: string
+                  enum: [draft, published, suspended, cancelled, completed]
+                  example: "suspended"
       responses:
         200:
           description: Evento actualizado exitosamente.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EventResponse'
         400:
-          description: Datos inválidos enviados en la petición.
+          description: Datos inválidos o cruce de horarios.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
         401:
-          description: No autorizado. Falla el token de autenticación.
+          description: Token ausente, expirado o inválido.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        403:
+          description: Requiere rol admin u organizer.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                msg: "No tienes permisos para esta acción"
         404:
           description: Evento no encontrado.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
         500:
           description: Error interno del servidor.
+
+    delete:
+      summary: Cancelar un evento (borrado lógico)
+      description: Cambia el estado del evento a `cancelled`. El documento NO se elimina de la base de datos. Acceso restringido a **Admin** y **Organizer**.
+      tags: [Eventos]
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/EventId'
+      responses:
+        200:
+          description: Evento cancelado correctamente.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    example: "Evento cancelado correctamente"
+                  event:
+                    $ref: '#/components/schemas/EventResponse'
+        400:
+          description: El evento ya está cancelado.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                msg: "El evento ya está cancelado"
+        401:
+          description: Token ausente, expirado o inválido.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        403:
+          description: Requiere rol admin u organizer.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                msg: "No tienes permisos para esta acción"
+        404:
+          description: Evento no encontrado.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        500:
+          description: Error interno del servidor.
+
+  /event/{id}/availability:
+    get:
+      summary: Consultar disponibilidad de zonas
+      description: Retorna el aforo disponible, ocupado y precio por cada zona del evento. Ruta pública.
+      tags: [Eventos]
+      parameters:
+        - $ref: '#/components/parameters/EventId'
+      responses:
+        200:
+          description: Disponibilidad por zonas obtenida correctamente.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  eventId:
+                    type: string
+                    example: "64a7b9c2f1e3a40012345678"
+                  title:
+                    type: string
+                    example: "Concierto de Rock"
+                  status:
+                    type: string
+                    example: "published"
+                  totalCapacity:
+                    type: number
+                    example: 10000
+                  totalAvailable:
+                    type: number
+                    example: 8500
+                  zones:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        name:
+                          type: string
+                          example: "VIP"
+                        capacity:
+                          type: number
+                          example: 500
+                        occupied:
+                          type: number
+                          example: 120
+                        available:
+                          type: number
+                          example: 380
+                        price:
+                          type: number
+                          example: 250
+        404:
+          description: Evento no encontrado.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        500:
+          description: Error interno del servidor.
+
+components:
+  parameters:
+    EventId:
+      in: path
+      name: id
+      required: true
+      schema:
+        type: string
+      description: ID único del evento (MongoDB ObjectId).
+      example: "64a7b9c2f1e3a40012345678"
+
+  schemas:
+    ZoneInput:
+      type: object
+      required: [name, capacity]
+      properties:
+        name:
+          type: string
+          example: "VIP"
+        capacity:
+          type: number
+          example: 500
+        price:
+          type: number
+          example: 250
+
+    ZoneResponse:
+      type: object
+      properties:
+        name:
+          type: string
+          example: "VIP"
+        capacity:
+          type: number
+          example: 500
+        occupied:
+          type: number
+          example: 120
+        price:
+          type: number
+          example: 250
+
+    EventResponse:
+      type: object
+      properties:
+        _id:
+          type: string
+          example: "64a7b9c2f1e3a40012345678"
+        title:
+          type: string
+          example: "Concierto de Rock"
+        description:
+          type: string
+          example: "El evento más esperado del año."
+        location:
+          type: string
+          example: "Auditorio Nacional"
+        startTime:
+          type: string
+          format: date-time
+          example: "2026-11-15T09:00:00.000Z"
+        endTime:
+          type: string
+          format: date-time
+          example: "2026-11-15T18:00:00.000Z"
+        status:
+          type: string
+          enum: [draft, published, suspended, cancelled, completed]
+          example: "published"
+        totalCapacity:
+          type: number
+          example: 10000
+        zones:
+          type: array
+          items:
+            $ref: '#/components/schemas/ZoneResponse'
+        createdBy:
+          type: object
+          properties:
+            _id:
+              type: string
+              example: "69c86fd26831072ddb2c30b1"
+            name:
+              type: string
+              example: "Arturo"
+        createdAt:
+          type: string
+          format: date-time
+          example: "2026-04-05T12:00:00.000Z"
+        updatedAt:
+          type: string
+          format: date-time
+          example: "2026-04-05T12:30:00.000Z"
+
+    Error:
+      type: object
+      properties:
+        msg:
+          type: string

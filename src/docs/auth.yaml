@@ -31,21 +31,32 @@ paths:
                   format: password
                   description: Contraseña segura para el usuario (se recomienda mínimo 6 caracteres).
                   example: "password123"
+                role:
+                  type: string
+                  description: "Rol solicitado (opcional). Valores permitidos: organizer, artist, user. Si se omite o se intenta asignar admin/staff, se asigna 'user' automáticamente."
+                  enum: [organizer, artist, user]
+                  example: "organizer"
       responses:
         201:
-          description: Usuario creado exitosamente. Devuelve los datos básicos y el token de sesión.
+          description: Usuario creado exitosamente. Devuelve los datos básicos del perfil creado.
           content:
             application/json:
               schema:
                 type: object
                 properties:
-                  msg:
+                  _id:
                     type: string
-                    example: "Usuario registrado correctamente"
-                  token:
+                    example: "60d0fe4f5311236168a109ca"
+                  name:
                     type: string
-                    description: JWT para autenticación futura.
-                    example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+                    example: "Arturo"
+                  email:
+                    type: string
+                    example: "artu22@eventmaster.com"
+                  role:
+                    type: string
+                    enum: [admin, organizer, artist, staff, user]
+                    example: "user"
         400:
           description: Error de validación (Ej. Falta un dato, formato inválido, o usuario ya existe).
           content:
@@ -55,7 +66,7 @@ paths:
                 properties:
                   msg:
                     type: string
-                    example: "El usuario ya existe con ese correo"
+                    example: "Usuario ya registrado"
         500:
           description: Error interno del servidor.
 
@@ -83,20 +94,27 @@ paths:
                   example: "password123"
       responses:
         200:
-          description: Autenticación exitosa. Retorna el JWT.
+          description: Autenticación exitosa. Retorna datos del usuario y el JWT.
           content:
             application/json:
               schema:
                 type: object
                 properties:
+                  _id:
+                    type: string
+                    example: "60d0fe4f5311236168a109ca"
+                  name:
+                    type: string
+                    example: "Arturo"
+                  email:
+                    type: string
+                    example: "artu22@eventmaster.com"
                   token:
                     type: string
-                    description: JWT que debe incluirse en los headers (Authorization Bearer) de rutas protegidas.
-                    example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNTVm..."
+                    description: JWT que debe incluirse en los headers (x-token o Authorization Bearer) de rutas protegidas.
+                    example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYwZDAuLi4"
         400:
-          description: Error de validación (faltan datos).
-        401:
-          description: Credenciales inválidas (contraseña incorrecta o usuario no encontrado).
+          description: Credenciales incorrectas o faltan datos de entrada.
           content:
             application/json:
               schema:
@@ -104,7 +122,7 @@ paths:
                 properties:
                   msg:
                     type: string
-                    example: "Credenciales inválidas"
+                    example: "Credenciales incorrectas"
         500:
           description: Error interno del servidor.
 
@@ -132,6 +150,10 @@ paths:
                   email:
                     type: string
                     example: "artu22@eventmaster.com"
+                  role:
+                    type: string
+                    enum: [admin, organizer, artist, staff, user]
+                    example: "organizer"
         401:
           description: No autorizado. No se envió el token o el token expiró/es inválido.
           content:
@@ -141,6 +163,6 @@ paths:
                 properties:
                   msg:
                     type: string
-                    example: "No hay token, permiso denegado"
+                    example: "Token no proporcionado | Token expirado | Token no válido"
         500:
           description: Error interno del servidor.

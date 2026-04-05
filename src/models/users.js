@@ -7,7 +7,7 @@ const userSchema = new Schema({
     password: { type: String, required: true },
     role: { 
         type: String, 
-        enum: ['admin', 'organizer', 'artist', 'user'], 
+        enum: ['admin', 'organizer', 'artist', 'staff', 'user'], 
         default: 'user' 
     }
 }, { timestamps: true }); // Timestamps para saber cuándo se unieron

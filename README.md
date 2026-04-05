@@ -23,33 +23,33 @@ El sistema implementa un Control de Acceso Basado en Roles (RBAC):
 - [x] **POST /auth/register**: Registro con asignacion de rol protegida (Whitelist).
 - [x] **POST /auth/login**: Validacion de credenciales y retorno de JWT + Rol.
 - [x] **GET /auth/me**: Recuperacion de sesion para el usuario autenticado.
-- [ ] **Middleware checkRole**: Implementar la restriccion de acceso segun el rol del JWT.
+- [x] **Middleware checkRole**: Implementar la restriccion de acceso segun el rol del JWT.
 
 ## 2. Modulo de Eventos (Events)
 - [x] **GET /events**: Listado general con filtrado opcional y ordenamiento.
 - [x] **GET /events/:id**: Detalle tecnico, zonas y precios por ID.
 - [x] **POST /events/new**: Creacion de evento y configuracion de aforo (Admin/Organizer).
-- [ ] **PATCH /events/:id**: Actualizacion parcial de parametros del evento (Admin/Organizer).
-- [ ] **DELETE /events/:id**: Cancelacion logica mediante cambio de estado (Admin/Organizer).
-- [ ] **GET /events/:id/availability**: Consulta rapida de disponibilidad por zonas.
+- [x] **PATCH /events/:id**: Actualizacion parcial de parametros del evento (Admin/Organizer).
+- [x] **DELETE /events/:id**: Cancelacion logica mediante cambio de estado (Admin/Organizer).
+- [x] **GET /events/:id/availability**: Consulta rapida de disponibilidad por zonas.
 
 ## 3. Modulo de Sedes (Places)
-- [ ] **GET /places**: Listado de infraestructura registrada (Direccion/Capacidad).
-- [ ] **POST /places**: Alta de nuevas sedes fisicas (Solo Admin).
-- [ ] **GET /places/:id/availability**: Verificacion de disponibilidad de fechas en la sede.
+- [x] **GET /places**: Listado de infraestructura registrada (Direccion/Capacidad).
+- [x] **POST /places**: Alta de nuevas sedes fisicas (Solo Admin).
+- [x] **GET /places/:id/availability**: Verificacion de disponibilidad de fechas en la sede.
 
 ## 4. Modulo de Reservas (Reservations)
-- [ ] **POST /reservations**: Creacion de ticket y descuento automatico de aforo por zona (User).
-- [ ] **GET /reservations/my-tickets**: Historial de comprobantes del usuario activo (User).
-- [ ] **DELETE /reservations/:id**: Cancelacion de reserva y liberacion de cupo (User/Admin).
-- [ ] **PATCH /reservations/:id/check-in**: Validacion de entrada al evento (Staff/Admin).
-- [ ] **GET /reservations/event/:eventId**: Reporte de ventas y ocupacion por zona (Admin/Organizer/Artist).
+- [x] **POST /reservations**: Creacion de ticket y descuento automatico de aforo por zona (User).
+- [x] **GET /reservations/my-tickets**: Historial de comprobantes del usuario activo (User).
+- [x] **DELETE /reservations/:id**: Cancelacion de reserva y liberacion de cupo (User/Admin).
+- [x] **PATCH /reservations/:id/check-in**: Validacion de entrada al evento (Staff/Admin).
+- [x] **GET /reservations/event/:eventId**: Reporte de ventas y ocupacion por zona (Admin/Organizer/Artist).
 
 ## 5. Infraestructura y Calidad
 - [x] **Estructura de Modelos**: User y Event definidos con validaciones.
-- [ ] **Modelo Place/Reservation**: Crear esquemas para sedes y transacciones de tickets.
+- [x] **Modelo Place/Reservation**: Crear esquemas para sedes y transacciones de tickets.
 - [x] **Seguridad Base**: Hashing de passwords y proteccion de JWT.
-- [ ] **Estandarizacion de Respuestas**: Asegurar codigos 200, 201, 400, 401, 403, 404 y 500.
+- [x] **Estandarizacion de Respuestas**: Asegurar codigos 200, 201, 400, 401, 403, 404 y 500.
 
 ---
 

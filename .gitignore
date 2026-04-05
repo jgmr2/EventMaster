@@ -13,3 +13,12 @@ pids/
 docker-volumes/
 .vscode/
 .idea/
+
+# GitHub Copilot / AI customization files
+.github/agents/
+.github/prompts/
+.github/instructions/
+.github/hooks/
+.github/copilot-instructions.md
+resultados.txt
+test-api.sh
