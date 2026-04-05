@@ -12,8 +12,7 @@ app.use(express.json());
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 app.use('/api/auth', require('./src/routes/authRoutes'));
 app.use('/api/event', require('./src/routes/eventRoutes'));
-app.use('/api/places', require('./src/routes/placesRoutes'));
-app.use('/api/reservations', require('./src/routes/reservationsRoutes'));
+app.use('/api/place', require('./src/routes/placeRoutes'));
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Servidor en puerto:  ${PORT}`));

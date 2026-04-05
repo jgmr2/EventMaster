@@ -1,12 +1,12 @@
 tags:
   - name: Sedes
-    description: Endpoints para la gestión y consulta de sedes físicas donde se realizan los eventos.
+    description: Endpoints del módulo de sedes (`placesRoutes.js`).
 
 paths:
   /places:
     get:
       summary: Obtener todas las sedes
-      description: Retorna el listado completo de sedes físicas registradas con su dirección y capacidad. Ruta pública.
+      description: Retorna todas las sedes registradas ordenadas por nombre. Ruta pública.
       tags: [Sedes]
       responses:
         200:
@@ -22,52 +22,35 @@ paths:
 
     post:
       summary: Registrar una nueva sede
-      description: Crea una nueva sede física en el sistema. Acceso restringido a **Admin**.
+      description: Crea una sede física. Requiere rol `admin`.
       tags: [Sedes]
       security:
         - bearerAuth: []
       requestBody:
-        description: Datos de la nueva sede.
         required: true
         content:
           application/json:
             schema:
-              type: object
-              required: [name, address, capacity]
-              properties:
-                name:
-                  type: string
-                  description: Nombre de la sede.
-                  example: "Auditorio Nacional"
-                address:
-                  type: string
-                  description: Dirección física completa. Debe ser única.
-                  example: "Paseo de la Reforma 50, Ciudad de México"
-                capacity:
-                  type: number
-                  description: Capacidad máxima total de la sede.
-                  example: 10000
-                features:
-                  type: array
-                  description: Lista de características o servicios disponibles en la sede.
-                  items:
-                    type: string
-                  example: ["estacionamiento", "aire acondicionado", "acceso para discapacitados"]
+              $ref: '#/components/schemas/PlaceCreateRequest'
       responses:
         201:
           description: Sede creada exitosamente.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/PlaceResponse'
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    example: "Sede creada exitosamente"
+                  place:
+                    $ref: '#/components/schemas/PlaceResponse'
         400:
-          description: Error de validación o dirección duplicada.
+          description: Nombre duplicado o capacidad de zonas inválida.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-              example:
-                msg: "Ya existe una sede con esa dirección"
         401:
           description: Token ausente, expirado o inválido.
           content:
@@ -87,8 +70,8 @@ paths:
 
   /places/{id}/availability:
     get:
-      summary: Verificar disponibilidad de fechas en una sede
-      description: Retorna los eventos activos agendados en la sede. Acepta un parámetro opcional `date` (YYYY-MM-DD) para filtrar por día específico. Ruta pública.
+      summary: Disponibilidad de una sede
+      description: Lista eventos activos asociados a la sede por nombre. Permite filtrar por día con `date=YYYY-MM-DD`.
       tags: [Sedes]
       parameters:
         - $ref: '#/components/parameters/PlaceId'
@@ -98,11 +81,10 @@ paths:
           schema:
             type: string
             format: date
-          description: Fecha a consultar en formato YYYY-MM-DD. Si se omite, retorna todos los eventos futuros.
           example: "2026-11-15"
       responses:
         200:
-          description: Disponibilidad de la sede obtenida correctamente.
+          description: Disponibilidad obtenida correctamente.
           content:
             application/json:
               schema:
@@ -123,29 +105,22 @@ paths:
                       properties:
                         _id:
                           type: string
-                          example: "64a7b9c2f1e3a40012345678"
                         title:
                           type: string
-                          example: "Concierto de Rock"
                         startTime:
                           type: string
                           format: date-time
-                          example: "2026-11-15T09:00:00.000Z"
                         endTime:
                           type: string
                           format: date-time
-                          example: "2026-11-15T18:00:00.000Z"
                         status:
                           type: string
-                          example: "published"
         404:
           description: Sede no encontrada.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-              example:
-                msg: "Sede no encontrada"
         500:
           description: Error interno del servidor.
 
@@ -157,38 +132,120 @@ components:
       required: true
       schema:
         type: string
-      description: ID único de la sede (MongoDB ObjectId).
+      description: ID de la sede (MongoDB ObjectId)
       example: "64a7b9c2f1e3a40012345679"
 
   schemas:
+    PlaceCreateRequest:
+      type: object
+      required: [name, location, maxCapacity]
+      properties:
+        name:
+          type: string
+          example: "Arena Ciudad de México"
+        address:
+          type: object
+          properties:
+            street:
+              type: string
+            city:
+              type: string
+            state:
+              type: string
+            country:
+              type: string
+            zipCode:
+              type: string
+        location:
+          type: object
+          required: [type, coordinates]
+          properties:
+            type:
+              type: string
+              enum: [Point]
+              example: "Point"
+            coordinates:
+              type: array
+              items:
+                type: number
+              example: [-99.1764, 19.4975]
+        defaultZones:
+          type: array
+          items:
+            type: object
+            properties:
+              name:
+                type: string
+              capacity:
+                type: number
+              description:
+                type: string
+        maxCapacity:
+          type: number
+          example: 22000
+        contactPhone:
+          type: string
+        amenities:
+          type: array
+          items:
+            type: string
+
     PlaceResponse:
       type: object
       properties:
         _id:
           type: string
-          example: "64a7b9c2f1e3a40012345679"
         name:
           type: string
-          example: "Auditorio Nacional"
         address:
-          type: string
-          example: "Paseo de la Reforma 50, Ciudad de México"
-        capacity:
+          type: object
+          properties:
+            street:
+              type: string
+            city:
+              type: string
+            state:
+              type: string
+            country:
+              type: string
+            zipCode:
+              type: string
+        location:
+          type: object
+          properties:
+            type:
+              type: string
+            coordinates:
+              type: array
+              items:
+                type: number
+        defaultZones:
+          type: array
+          items:
+            type: object
+            properties:
+              name:
+                type: string
+              capacity:
+                type: number
+              description:
+                type: string
+        maxCapacity:
           type: number
-          example: 10000
-        features:
+        contactPhone:
+          type: string
+        amenities:
           type: array
           items:
             type: string
-          example: ["estacionamiento", "aire acondicionado"]
+        isActive:
+          type: boolean
         createdAt:
           type: string
           format: date-time
-          example: "2026-04-05T12:00:00.000Z"
         updatedAt:
           type: string
           format: date-time
-          example: "2026-04-05T12:30:00.000Z"
 
     Error:
       type: object

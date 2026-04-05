@@ -1,67 +1,21 @@
 tags:
-  - name: Sedes
-    description: Endpoints para la gestión de infraestructura física (Panel Admin).
+  - name: Sede Legacy
+    description: Endpoint legado montado actualmente bajo `/api/place`.
 
 paths:
-  /places:
+  /place:
     post:
-      summary: Crear una nueva sede física
-      description: Registra una nueva sede con sus zonas predefinidas y coordenadas geográficas. Solo accesible para administradores autenticados.
-      tags: [Sedes]
+      summary: Crear sede (ruta legacy)
+      description: Crea una sede física. Ruta protegida por autenticación (sin restricción de rol en esta ruta).
+      tags: [Sede Legacy]
       security:
         - bearerAuth: []
       requestBody:
-        description: Datos necesarios para dar de alta la sede.
         required: true
         content:
           application/json:
             schema:
-              type: object
-              required: [name, location, maxCapacity]
-              properties:
-                name:
-                  type: string
-                  description: Nombre único de la sede.
-                  example: "Arena Ciudad de México"
-                address:
-                  type: object
-                  properties:
-                    street: { type: string, example: "Av. de las Granjas 800" }
-                    city: { type: string, example: "CDMX" }
-                    state: { type: string, example: "Azcapotzalco" }
-                    country: { type: string, example: "México" }
-                    zipCode: { type: string, example: "02250" }
-                location:
-                  type: object
-                  required: [type, coordinates]
-                  properties:
-                    type:
-                      type: string
-                      example: "Point"
-                    coordinates: 
-                      type: array
-                      items: { type: number }
-                      example: [-99.1764, 19.4975]
-                maxCapacity:
-                  type: number
-                  description: Capacidad total de personas en el recinto.
-                  example: 22000
-                defaultZones:
-                  type: array
-                  items:
-                    type: object
-                    required: [name, capacity]
-                    properties:
-                      name: { type: string, example: "VIP" }
-                      capacity: { type: number, example: 5000 }
-                      description: { type: string, example: "Zona preferente" }
-                contactPhone:
-                  type: string
-                  example: "+525512345678"
-                amenities:
-                  type: array
-                  items: { type: string }
-                  example: ["Parking", "WiFi", "Accesibilidad"]
+              $ref: '#/components/schemas/PlaceCreateRequest'
       responses:
         201:
           description: Sede creada exitosamente.
@@ -74,21 +28,158 @@ paths:
                     type: string
                     example: "Sede creada exitosamente"
                   place:
-                    type: object
-                    properties:
-                      _id: { type: string, example: "64f1a2b3c4d5e6f7a8b9c0d1" }
-                      name: { type: string, example: "Arena Ciudad de México" }
+                    $ref: '#/components/schemas/PlaceResponse'
         400:
-          description: Error de validación (nombre duplicado o capacidad de zonas excedida).
+          description: Nombre duplicado o validación de capacidad de zonas.
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  msg:
-                    type: string
-                    example: "La capacidad total de las zonas excede la capacidad máxima de la sede"
+                $ref: '#/components/schemas/Error'
+              examples:
+                nombreDuplicado:
+                  value:
+                    msg: "Ya existe una sede con ese nombre"
+                capacidadInvalida:
+                  value:
+                    msg: "La capacidad total de las zonas excede la capacidad máxima de la sede"
         401:
-          description: No autorizado. Falla el token de autenticación.
+          description: Token ausente, expirado o inválido.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
         500:
           description: Error interno del servidor.
+
+components:
+  schemas:
+    PlaceCreateRequest:
+      type: object
+      required: [name, location, maxCapacity]
+      properties:
+        name:
+          type: string
+          example: "Arena Ciudad de México"
+        address:
+          type: object
+          properties:
+            street:
+              type: string
+              example: "Av. de las Granjas 800"
+            city:
+              type: string
+              example: "CDMX"
+            state:
+              type: string
+              example: "Azcapotzalco"
+            country:
+              type: string
+              example: "México"
+            zipCode:
+              type: string
+              example: "02250"
+        location:
+          type: object
+          required: [type, coordinates]
+          properties:
+            type:
+              type: string
+              example: "Point"
+            coordinates:
+              type: array
+              items:
+                type: number
+              example: [-99.1764, 19.4975]
+        defaultZones:
+          type: array
+          items:
+            type: object
+            properties:
+              name:
+                type: string
+                example: "VIP"
+              capacity:
+                type: number
+                example: 5000
+              description:
+                type: string
+                example: "Zona preferente"
+        maxCapacity:
+          type: number
+          example: 22000
+        contactPhone:
+          type: string
+          example: "+525512345678"
+        amenities:
+          type: array
+          items:
+            type: string
+          example: ["Parking", "WiFi", "Accesibilidad"]
+
+    PlaceResponse:
+      type: object
+      properties:
+        _id:
+          type: string
+          example: "64f1a2b3c4d5e6f7a8b9c0d1"
+        name:
+          type: string
+          example: "Arena Ciudad de México"
+        address:
+          type: object
+          properties:
+            street:
+              type: string
+            city:
+              type: string
+            state:
+              type: string
+            country:
+              type: string
+            zipCode:
+              type: string
+        location:
+          type: object
+          properties:
+            type:
+              type: string
+              example: "Point"
+            coordinates:
+              type: array
+              items:
+                type: number
+        defaultZones:
+          type: array
+          items:
+            type: object
+            properties:
+              name:
+                type: string
+              capacity:
+                type: number
+              description:
+                type: string
+        maxCapacity:
+          type: number
+          example: 22000
+        contactPhone:
+          type: string
+        amenities:
+          type: array
+          items:
+            type: string
+        isActive:
+          type: boolean
+          example: true
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    Error:
+      type: object
+      properties:
+        msg:
+          type: string
