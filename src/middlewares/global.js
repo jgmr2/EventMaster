@@ -8,17 +8,13 @@ const checkAuth = async (req, res, next) => {
         
         if (!token) return res.status(401).json({ msg: 'Token no proporcionado' });
 
-        // 2. Verificar y obtener ID y ROLE del token
-        const { id, role } = jwt.verify(token, process.env.JWT_SECRET);
+        // 2. Verificar token y obtener ID
+        const { id } = jwt.verify(token, process.env.JWT_SECRET);
 
         // 3. Buscar usuario (inyectamos el rol directamente para no depender solo del token)
         req.usuario = await user.findById(id).select('-password -__v');
         
         if (!req.usuario) return res.status(401).json({ msg: 'Usuario inexistente' });
-
-        // 4. OPCIONAL: Doble validación de rol
-        // Si el rol en la DB cambió, actualizamos el del request
-        req.usuario.role = role || req.usuario.role;
 
         next();
     } catch (error) {
