@@ -1,12 +1,11 @@
 require('dotenv').config(); 
 const express = require('express');
 const connectDB = require('./src/config/dataBase'); 
+const ensureAdminUser = require('./src/config/seedAdmin');
 const swaggerUi = require('swagger-ui-express');
 const swaggerSpec = require('./src/config/swagger');
 
 const app = express();
-
-connectDB(); 
 
 // CORS nativo para permitir cualquier origen, método y headers en toda la API.
 app.use((req, res, next) => {
@@ -31,4 +30,11 @@ app.use('/api/places', require('./src/routes/placesRoutes'));
 app.use('/api/reservations', require('./src/routes/reservationsRoutes'));
 
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`Servidor en puerto:  ${PORT}`));
+
+const bootstrap = async () => {
+	await connectDB();
+	await ensureAdminUser();
+	app.listen(PORT, () => console.log(`Servidor en puerto:  ${PORT}`));
+};
+
+bootstrap();

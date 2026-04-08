@@ -51,7 +51,7 @@ paths:
   /auth/login:
     post:
       summary: Iniciar sesión
-      description: Valida credenciales y retorna token JWT + metadatos de rol para renderizado de UI.
+      description: "Valida credenciales y retorna token JWT + metadatos de rol para renderizado de UI. Ejemplo por defecto: usuario admin seed (`ADMIN_EMAIL`/`ADMIN_PASSWORD`)."
       tags: [Auth]
       requestBody:
         required: true
@@ -64,11 +64,11 @@ paths:
                 email:
                   type: string
                   format: email
-                  example: "artu22@eventmaster.com"
+                  example: "admin@eventmaster.local"
                 password:
                   type: string
                   format: password
-                  example: "password123"
+                  example: "Admin123456789"
       responses:
         200:
           description: Login exitoso.
@@ -201,14 +201,14 @@ components:
           example: "60d0fe4f5311236168a109ca"
         name:
           type: string
-          example: "Arturo"
+          example: "EventMaster Admin"
         email:
           type: string
-          example: "artu22@eventmaster.com"
+          example: "admin@eventmaster.local"
         role:
           type: string
           enum: [admin, organizer, artist, staff, user]
-          example: "staff"
+          example: "admin"
         accountType:
           type: string
           enum: [admin_panel, end_user]
@@ -217,7 +217,7 @@ components:
           type: array
           items:
             type: string
-          example: ["checkin:manage"]
+          example: ["dashboard", "users:manage", "places:manage", "events:manage", "reports:view"]
         token:
           type: string
           example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYwZDAuLi4"
