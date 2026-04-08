@@ -23,20 +23,22 @@ El sistema implementa un Control de Acceso Basado en Roles (RBAC):
 - [x] **POST /auth/register**: Registro con asignacion de rol protegida (Whitelist).
 - [x] **POST /auth/login**: Validacion de credenciales y retorno de JWT + Rol.
 - [x] **GET /auth/me**: Recuperacion de sesion para el usuario autenticado.
+- [x] **POST /auth/admin/create-account**: Alta de cuentas operativas (Solo Admin).
 - [x] **Middleware checkRole**: Implementar la restriccion de acceso segun el rol del JWT.
 
 ## 2. Modulo de Eventos (Events)
-- [x] **GET /events**: Listado general con filtrado opcional y ordenamiento.
-- [x] **GET /events/:id**: Detalle tecnico, zonas y precios por ID.
-- [x] **POST /events/new**: Creacion de evento y configuracion de aforo (Admin/Organizer).
-- [x] **PATCH /events/:id**: Actualizacion parcial de parametros del evento (Admin/Organizer).
-- [x] **DELETE /events/:id**: Cancelacion logica mediante cambio de estado (Admin/Organizer).
-- [x] **GET /events/:id/availability**: Consulta rapida de disponibilidad por zonas.
+- [x] **GET /event**: Listado general con filtrado opcional y ordenamiento.
+- [x] **GET /event/:id**: Detalle tecnico, zonas y precios por ID.
+- [x] **POST /event/new**: Creacion de evento y configuracion de aforo (Admin/Organizer).
+- [x] **PATCH /event/:id**: Actualizacion parcial de parametros del evento (Admin/Organizer).
+- [x] **DELETE /event/:id**: Cancelacion logica mediante cambio de estado (Admin/Organizer).
+- [x] **GET /event/:id/availability**: Consulta rapida de disponibilidad por zonas.
 
 ## 3. Modulo de Sedes (Places)
 - [x] **GET /places**: Listado de infraestructura registrada (Direccion/Capacidad).
 - [x] **POST /places**: Alta de nuevas sedes fisicas (Solo Admin).
 - [x] **GET /places/:id/availability**: Verificacion de disponibilidad de fechas en la sede.
+- [x] **POST /place**: Endpoint legacy para alta de sedes (autenticado, sin rol explicito).
 
 ## 4. Modulo de Reservas (Reservations)
 - [x] **POST /reservations**: Creacion de ticket y descuento automatico de aforo por zona (User).
